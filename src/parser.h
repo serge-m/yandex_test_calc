@@ -99,35 +99,50 @@ public:
         {
             elem = GetPiece( s );
 
-            if( elem == "(" )
+            /*if( elem == "(" )
             {
                 prevExpression = GetExpression2( s, "(", Stack() );
-            }
-            else if( IsPositiveInteger( elem ) )
+            }*/
+            if( IsPositiveInteger( elem ) )
             {
-                prevExpression.clear();
-                prevExpression.push_back( elem );
-                prevStack.push_back( elem );
-                if( prevOpInExpr != "" )
-                {
-                    prevStack.push_back( prevOpInExpr );
-                }
+                res_.push_back( elem );
             }
             else if( IsOperation( elem ) )
             {
-                if( Priority( elem ) > Priority( prevOp ) )
+                while( !operations_.empty() )
                 {
-                    Stack newExp = GetExpression2( s, elem, prevExpression );
+                    string lastOp = operations_.back();
+                    int prior = Priority( lastOp );
+                    if( prior >= Priority( elem ) )
+                    {
+                        res_.push_back( lastOp );
+                        operations_.pop_back();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if( elem == ")" )
+                {
 
+                    string lastOp;
+                    if( operations_.empty() || ( lastOp = operations_.back()) != "(" )
+                    {
+                        throw std::exception( "Unexpected ')'" );
+                    }
+                    operations_.pop_back();
                 }
                 else
                 {
-                    prevOpInExpr = elem;
+                    operations_.push_back( elem );
                 }
+
+                
             }
 
 
-        } while ( Priority( elem ) <= Priority( prevOp ) );
+        } while ( elem != eol );
     
         return prevStack;
     }
@@ -149,13 +164,17 @@ public:
         {
             return 2;
         }
-        else if( s == "(" || s == ")" )
+        else if( s == "(" )
+        {
+            return 4;
+        }
+        else if ( s == ")" )
         {
             return 3;
         }
-        else if( s == "$" || s == eol )
+        else if( s == eol )
         {
-            return 4;
+            return -1;
         }
         else if (IsPositiveInteger( s ))
         {
@@ -167,7 +186,7 @@ public:
     }
     bool IsOperation( string s )
     {
-        return s == "+" || s == "-" || s == "*" || s == "/";
+        return s == "+" || s == "-" || s == "*" || s == "/" || s == eol || s == "(" || s == ")";
     }
     string GetPiece( const std::string & s )
     {
