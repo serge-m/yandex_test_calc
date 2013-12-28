@@ -40,6 +40,7 @@ double Parser::CalcOperation( StackElement op, StackForCalculations & s )
     {
         try
         {
+            /// пытаемся выбрать нужное число аргументов из стека
             var2 = GetNumberFromStack( s );
             var1 = GetNumberFromStack( s );
         }
@@ -178,6 +179,8 @@ bool Parser::IsPositiveInteger( const std::string& s )
         (std::count_if(s.begin(), s.end(), std::isdigit) == s.size());
 }
 
+
+/// Да, эта функция написана страшненько
 int Parser::Priority( string s )
 {
     if( s == "+" || s == "-" )
@@ -209,11 +212,13 @@ int Parser::Priority( string s )
         return 0;
 }
 
+/// Да, эта функция написана страшненько
 bool Parser::IsOperation( string s )
 {
     return s == "+" || s == "-" || s == "*" || s == "/" || s == eol || s == "(" || s == ")";
 }
 
+/// Да, эта функция написана страшненько
 std::string Parser::GetPiece( const std::string & s )
 {
     string res = "";

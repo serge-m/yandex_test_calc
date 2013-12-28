@@ -4,7 +4,8 @@
 #include <iostream>
 using namespace std;
 
-
+/// Запуск парсера
+/// Если check == true, то делается проверка на правильность работы. 
 void RunParser( string expression, bool check = false, bool isCorrect = true, double reference = 0.0)
 {
     Parser parser;
