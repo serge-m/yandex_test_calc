@@ -39,59 +39,11 @@ public:
         pos_ = 0;
         res_.clear();
         operations_.clear();
-        GetExpression2( s, "$", st );
+        GetExpression2( s );
     }
 
-    /*Stack GetExpression( string s, string prevOp,
-         Stack prevStack )
-    {
-        Stack result;
-        string piece = GetPiece( s );
-        if( piece == eol )
-        {
-            if( prevOp == "" )
-            {
-            }
-        }
-        else if( piece == "(" )
-        {
-            Stack newExp = GetExpression( s, "(" );
-            result.insert( result.end(), newExp.begin(), newExp.end() );
-        }
-        else if( piece == ")" )
-        {
-            if( prevOp == "(" )
-            {
-            }
-            else
-            {
-                throw std::exception( "Unexpected bracket" );
-            }
-        }
-        else if( IsPositiveInteger( piece ) )
-        {
-            result.push_back( piece );
-        }
-        else if( IsOperation( piece ) )
-        {
-            if( Priority( piece ) <= Priority( prevOp ) )
-            {
-                result = GetExpression( s, piece );
-                result.push_back( piece );    
-            }
-            else
-            {
-                GetExpression( s, piece );
 
-            }
-            
-        }
-             
-
-    }*/
-
-    Stack GetExpression2( string s, string prevOp,
-        Stack prevStack )
+    Stack GetExpression2( string s )
     {
         StackElement elem;
         Stack prevExpression;
@@ -100,10 +52,7 @@ public:
         {
             elem = GetPiece( s );
 
-            /*if( elem == "(" )
-            {
-                prevExpression = GetExpression2( s, "(", Stack() );
-            }*/
+
             if( IsPositiveInteger( elem ) )
             {
                 res_.push_back( elem );
@@ -147,7 +96,6 @@ public:
 
         } while ( elem != eol );
     
-        return prevStack;
     }
 
     bool IsPositiveInteger(const std::string& s)
