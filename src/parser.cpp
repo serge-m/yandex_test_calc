@@ -1,3 +1,4 @@
 #include "parser.h"
 
-Parser::eol = "$";
+const string Parser::eol = "$";
+

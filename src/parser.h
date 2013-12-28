@@ -2,7 +2,9 @@
 #define parser_h__
 
 #include <string>
-
+#include <vector>
+#include <algorithm>
+#include <cctype>
 using namespace std; // убрать из хедера
 
 class Parser
@@ -31,13 +33,16 @@ public:
     }
     void Parse( const std::string & s )
     {
-       
+        Stack st;
         string sc = s + eol;
-        int i = 0;
-        GetExpression( s );
+        pos_ = 0;
+        res_.clear();
+        operations_.clear();
+        GetExpression2( s, "$", st );
     }
 
-    Stack GetExpression( string s, string prevOp )
+    /*Stack GetExpression( string s, string prevOp,
+         Stack prevStack )
     {
         Stack result;
         string piece = GetPiece( s );
@@ -45,7 +50,6 @@ public:
         {
             if( prevOp == "" )
             {
-                return result;
             }
         }
         else if( piece == "(" )
@@ -57,32 +61,22 @@ public:
         {
             if( prevOp == "(" )
             {
-                return result; // ok
             }
             else
             {
                 throw std::exception( "Unexpected bracket" );
             }
         }
-        else if( isPositiveInteger( piece ) )
+        else if( IsPositiveInteger( piece ) )
         {
-            //GetExpression( s, "num" );
-            if( prevOp == "" || prevOp == "(" )
-            {
-                Push( piece );
-            }
-            else 
-            {
-                
-            }
-            return; // ok
+            result.push_back( piece );
         }
         else if( IsOperation( piece ) )
         {
             if( Priority( piece ) <= Priority( prevOp ) )
             {
-                GetExpression( s, piece );
-                Push( piece );    
+                result = GetExpression( s, piece );
+                result.push_back( piece );    
             }
             else
             {
@@ -93,9 +87,52 @@ public:
         }
              
 
+    }*/
+
+    Stack GetExpression2( string s, string prevOp,
+        Stack prevStack )
+    {
+        StackElement elem;
+        Stack prevExpression;
+        StackElement prevOpInExpr = "";
+        do 
+        {
+            elem = GetPiece( s );
+
+            if( elem == "(" )
+            {
+                prevExpression = GetExpression2( s, "(", Stack() );
+            }
+            else if( IsPositiveInteger( elem ) )
+            {
+                prevExpression.clear();
+                prevExpression.push_back( elem );
+                prevStack.push_back( elem );
+                if( prevOpInExpr != "" )
+                {
+                    prevStack.push_back( prevOpInExpr );
+                }
+            }
+            else if( IsOperation( elem ) )
+            {
+                if( Priority( elem ) > Priority( prevOp ) )
+                {
+                    Stack newExp = GetExpression2( s, elem, prevExpression );
+
+                }
+                else
+                {
+                    prevOpInExpr = elem;
+                }
+            }
+
+
+        } while ( Priority( elem ) <= Priority( prevOp ) );
+    
+        return prevStack;
     }
 
-    bool isPositiveInteger(const std::string& s)
+    bool IsPositiveInteger(const std::string& s)
     {
         return !s.empty() && 
             (std::count_if(s.begin(), s.end(), std::isdigit) == s.size());
@@ -112,40 +149,75 @@ public:
         {
             return 2;
         }
+        else if( s == "(" || s == ")" )
+        {
+            return 3;
+        }
+        else if( s == "$" || s == eol )
+        {
+            return 4;
+        }
+        else if (IsPositiveInteger( s ))
+        {
+            return 1;
+        }
         else
-            throw std::exception( "Unknown operation " + s );
+            return 0;
 
     }
     bool IsOperation( string s )
     {
         return s == "+" || s == "-" || s == "*" || s == "/";
     }
-    string GetPiece( int & i, const std::string & s )
+    string GetPiece( const std::string & s )
     {
         string res = "";
+
         ParserState newState = STATE_START;
-        while( i < s.length() && s[i] == ' ' ) 
-            ++ i;
+        while( pos_ < s.length() && s[pos_] == ' ' ) 
+            ++ pos_;
 
-        if( i >= s.length() )
+        if( pos_ >= s.length() )
         {
-        
+            return eol;
         }
-        while ( i < s.length() )
+    
+        int posFirst= pos_;
+
+        while ( pos_ < s.length() && GetSymbolClass( s[pos_]) == GetSymbolClass( s[posFirst ]) )
         {
-            if( s[i] == ' ' )
-            {
-                break;
-            }
-            else if( isalpha( s[i] ) )
-            {
-
-            }
-
+            pos_ ++;    
         }
+
+        return s.substr( posFirst, pos_ - posFirst );
+       
+    }
+    typedef enum
+    {
+        CLASS_ALPHA,
+        CLASS_NUM,
+        CLASS_OPERATION,
+        CLASS_SPACE,
+        CLASS_UNKNOWN,
+    } SymbolClass;
+    SymbolClass GetSymbolClass( char symbol )
+    {
+        if( isalpha( symbol ) )
+            return CLASS_ALPHA;
+        if( isdigit( symbol ) )
+            return CLASS_NUM;
+        if( symbol == '+' || symbol == '-' || symbol == '/' || symbol == '*' )
+            return CLASS_OPERATION;
+        if( isspace( symbol ) )
+            return CLASS_SPACE;
+
+        return CLASS_UNKNOWN;
     }
 private:
     ParserState state_;
+    int pos_;
+    Stack res_;
+    Stack operations_;
 };
 
 #endif // parser_h__
