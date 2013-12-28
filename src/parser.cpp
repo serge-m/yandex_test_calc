@@ -113,14 +113,14 @@ double Parser::Parse( const std::string & s )
     Stack st;
     string sc = s + eol;
     pos_ = 0;
-    res_.clear();
-    operations_.clear();
-    GetExpression2( s );
-    double res = CalcExpression( res_ );
+    stackPostfix_.clear();
+    stackOperations_.clear();
+    CreateReversePolishNotation( s );
+    double res = CalcExpression( stackPostfix_ );
     return res;
 }
 
-void Parser::GetExpression2( string s )
+void Parser::CreateReversePolishNotation( string s )
 {
     StackElement elem;
     do 
@@ -130,13 +130,13 @@ void Parser::GetExpression2( string s )
 
         if( IsPositiveInteger( elem ) )
         {
-            res_.push_back( elem );
+            stackPostfix_.push_back( elem );
         }
         else if( IsOperation( elem ) )
         {
-            while( !operations_.empty() )
+            while( !stackOperations_.empty() )
             {
-                string lastOp = operations_.back();
+                string lastOp = stackOperations_.back();
                 if( lastOp == "(" )
                     break;
 
@@ -145,24 +145,24 @@ void Parser::GetExpression2( string s )
                 if( prior < Priority( elem ))
                     break;
 
-                res_.push_back( lastOp );
-                operations_.pop_back();
+                stackPostfix_.push_back( lastOp );
+                stackOperations_.pop_back();
             }
             if( elem == ")" )
             {
 
                 string lastOp;
-                if( operations_.empty() || ( lastOp = operations_.back()) != "(" )
+                if( stackOperations_.empty() || ( lastOp = stackOperations_.back()) != "(" )
                 {
                     stringstream ss;
                     ss << "Unexpected ')' in position " << pos_;
                     throw std::exception( ss.str().c_str() );
                 }
-                operations_.pop_back();
+                stackOperations_.pop_back();
             }
             else
             {
-                operations_.push_back( elem );
+                stackOperations_.push_back( elem );
             }
 
 

@@ -13,7 +13,7 @@ void RunParser( string expression, bool check = false, bool isCorrect = true, do
     {
         double res = parser.Parse( expression );
         cout << expression << "=" << res;
-        if( check && isCorrect && reference == res )
+        if( check && isCorrect && reference == res ) /// тут, конечно, нехорошо проверять на равенство :)
         {
             testPassed = true;
         }
@@ -47,6 +47,8 @@ int main()
     RunParser( "8+9*(7+8)-13", true, true, 130 );
     RunParser( "1+1+1+1", true, true, 4 );
     RunParser( "1*1+1+1))", true, false );
+    RunParser( "((100))", true, true, 100 );
+    RunParser( "((100)/3)", true, true, 100/3.0 );
 
     
     RunParser( "1*(1+1+1)" );
