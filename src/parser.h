@@ -3,32 +3,29 @@
 
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <cctype>
-#include <sstream>
-using namespace std; // убрать из хедера
 
 class Parser
 {
 public:
-
-    typedef string StackElement;
-    typedef vector<StackElement> Stack;
-    typedef vector<double> StackForCalculations;
-
-    static const string eol;
     Parser();
     virtual ~Parser();
     double Parse( const std::string & s );
 
+private:
+    typedef std::string StackElement;
+    typedef std::vector<StackElement> Stack;
+    typedef std::vector<double> StackForCalculations;
 
-    void GetExpression2( string s );
+    static const std::string eol;
+    
+
+    void GetExpression2( std::string s );
 
     bool IsPositiveInteger(const std::string& s);
 
-    int Priority( string s );
-    bool IsOperation( string s );
-    string GetPiece( const std::string & s );
+    int Priority( std::string s );
+    bool IsOperation( std::string s );
+    StackElement GetPiece( const std::string & s );
     typedef enum
     {
         CLASS_ALPHA,

@@ -46,10 +46,11 @@ int main()
 {
     RunParser( "8+9*(7+8)-13", true, true, 130 );
     RunParser( "1+1+1+1", true, true, 4 );
+    RunParser( "1*1+1+1))", true, false );
+
     
     RunParser( "1*(1+1+1)" );
     RunParser( "1(*(((1+1+1)" );
-    RunParser( "1*1+1+1))" );
 
 
     return 0;

@@ -1,6 +1,13 @@
 #include "parser.h"
+#include <algorithm>
+#include <cctype>
+#include <sstream>
+
+using namespace std; // убрать из хедера
+
 
 const string Parser::eol = "$";
+
 
 
 double Parser::CalcExpression( Stack st )
