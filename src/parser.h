@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 using namespace std; // убрать из хедера
 
 class Parser
@@ -112,16 +113,16 @@ public:
                 while( !operations_.empty() )
                 {
                     string lastOp = operations_.back();
-                    int prior = Priority( lastOp );
-                    if( prior >= Priority( elem ) )
-                    {
-                        res_.push_back( lastOp );
-                        operations_.pop_back();
-                    }
-                    else
-                    {
+                    if( lastOp == "(" )
                         break;
-                    }
+
+                    int prior = Priority( lastOp );
+
+                    if( prior < Priority( elem ))
+                        break;
+
+                    res_.push_back( lastOp );
+                    operations_.pop_back();
                 }
                 if( elem == ")" )
                 {
@@ -129,7 +130,9 @@ public:
                     string lastOp;
                     if( operations_.empty() || ( lastOp = operations_.back()) != "(" )
                     {
-                        throw std::exception( "Unexpected ')'" );
+                        stringstream ss;
+                        ss << "Unexpected ')' in position " << pos_;
+                        throw std::exception( ss.str().c_str() );
                     }
                     operations_.pop_back();
                 }
@@ -170,7 +173,7 @@ public:
         }
         else if ( s == ")" )
         {
-            return 3;
+            return 1;
         }
         else if( s == eol )
         {
@@ -202,6 +205,13 @@ public:
         }
     
         int posFirst= pos_;
+
+        string s1 = s.substr( posFirst, 1 );
+        if( IsOperation( s1 ) )
+        {
+            pos_ ++;
+            return s1;
+        }
 
         while ( pos_ < s.length() && GetSymbolClass( s[pos_]) == GetSymbolClass( s[posFirst ]) )
         {

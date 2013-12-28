@@ -7,12 +7,19 @@ using namespace std;
 
 int main()
 {
-    string s = "8+9*7+8-13";
+    string s = "8+9*(7+8))-13";
 
     cout << s << endl;
 
     Parser parser;
-    parser.Parse( s );
+    try
+    {
+        parser.Parse( s );
+    }
+    catch( const std::exception & e )
+    {
+        cout << e.what();
+    }
 
 
     return 0;
