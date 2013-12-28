@@ -22,6 +22,7 @@ public:
 
     typedef string StackElement;
     typedef vector<StackElement> Stack;
+    typedef vector<double> StackForCalculations;
 
     static const string eol;
     Parser()
@@ -32,7 +33,7 @@ public:
     {
 
     }
-    void Parse( const std::string & s )
+    double Parse( const std::string & s )
     {
         Stack st;
         string sc = s + eol;
@@ -40,14 +41,14 @@ public:
         res_.clear();
         operations_.clear();
         GetExpression2( s );
+        double res = CalcExpression( res_ );
+        return res;
     }
 
 
-    Stack GetExpression2( string s )
+    void GetExpression2( string s )
     {
         StackElement elem;
-        Stack prevExpression;
-        StackElement prevOpInExpr = "";
         do 
         {
             elem = GetPiece( s );
@@ -190,6 +191,13 @@ public:
 
         return CLASS_UNKNOWN;
     }
+   
+    double CalcExpression( Stack st );
+   
+    double CalcOperation( StackElement op, StackForCalculations & s );
+   
+    double GetNumberFromStack( StackForCalculations & s );
+    double GetNumberFromString( StackElement se );
 private:
     ParserState state_;
     int pos_;
